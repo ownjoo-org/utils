@@ -4,8 +4,8 @@ import io
 import unittest
 from unittest.mock import patch
 
-from utils.console.colors import Color
-from utils.console.status import (
+from ownjoo_toolkit.console.colors import Color
+from ownjoo_toolkit.console.status import (
     progress_bar,
     status_badge,
     status_line,

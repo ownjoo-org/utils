@@ -32,7 +32,7 @@ jobs:
           python -m pip install -e "${{ github.workspace }}"
 
       - name: Verify package installation
-        run: python -c "import utils; print('✓ utils installed'); import sys; print('Python path:', sys.path)"
+        run: python -c "import ownjoo_toolkit; print('✓ ownjoo_toolkit installed'); import sys; print('Python path:', sys.path)"
 
       - name: Run tests
         env:

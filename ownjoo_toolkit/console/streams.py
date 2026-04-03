@@ -7,8 +7,8 @@ with support for colored output using ANSI escape codes and chainable colored te
 import sys
 from typing import Any, Optional, TextIO
 
-from utils.console.colors import Color
-from utils.console.colored_text import ColoredText
+from ownjoo_toolkit.console.colors import Color
+from ownjoo_toolkit.console.colored_text import ColoredText
 
 
 class Output:
@@ -103,7 +103,7 @@ class Output:
             flush: Whether to force flush the stream (default: False).
 
         Example:
-            >>> from utils.console import Output, Color
+            >>> from ownjoo_toolkit.console import Output, Color
             >>> output = Output()
             >>> output.out_colored("Success", color=Color.GREEN)
             >>> output.out_colored("Warning", color=Color.BOLD + Color.YELLOW)
@@ -133,7 +133,7 @@ class Output:
             flush: Whether to force flush the stream (default: False).
 
         Example:
-            >>> from utils.console import Output, Color
+            >>> from ownjoo_toolkit.console import Output, Color
             >>> output = Output()
             >>> output.err_colored("Error", color=Color.RED)
             >>> output.err_colored("Fatal", color=Color.BOLD + Color.RED)

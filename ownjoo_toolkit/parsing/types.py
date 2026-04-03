@@ -11,7 +11,7 @@ import logging
 from datetime import datetime
 from typing import Any, Callable, Optional, Type, Union, Iterable
 
-from utils.parsing.consts import DEFAULT_SEPARATOR, DEFAULT_VALIDATOR, TimeFormats, DEFAULT_CONVERTER
+from ownjoo_toolkit.parsing.consts import DEFAULT_SEPARATOR, DEFAULT_VALIDATOR, TimeFormats, DEFAULT_CONVERTER
 
 logger = logging.getLogger(__name__)
 

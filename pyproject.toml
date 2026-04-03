@@ -3,7 +3,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "utils"
+name = "ownjoo-toolkit"
 version = "0.1.0"
 description = "Centralized shared utilities for ownjoo-org projects: type validation, data parsing, and progress logging"
 authors = [

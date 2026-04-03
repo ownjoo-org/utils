@@ -4,7 +4,7 @@ import io
 import unittest
 from unittest.mock import patch
 
-from utils.console.table import Table, tabulated
+from ownjoo_toolkit.console.table import Table, tabulated
 
 
 class TestTable(unittest.TestCase):

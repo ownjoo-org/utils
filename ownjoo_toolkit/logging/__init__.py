@@ -6,6 +6,6 @@ Provides decorators that wrap generator and async generator functions to:
 - Count items yielded
 """
 
-from utils.logging.decorators import timed_generator, timed_async_generator
+from ownjoo_toolkit.logging.decorators import timed_generator, timed_async_generator
 
 __all__ = ['timed_generator', 'timed_async_generator']

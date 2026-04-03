@@ -8,7 +8,7 @@ Usage:
     PYTHONIOENCODING=utf-8 python test/ua/demo_visual_output.py
 """
 
-from utils import Box, Color, ColoredText, Output, Table, progress_bar, status_badge, status_line
+from ownjoo_toolkit import Box, Color, ColoredText, Output, Table, progress_bar, status_badge, status_line
 
 output = Output()
 

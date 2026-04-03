@@ -7,7 +7,7 @@ and status badges with optional colors.
 from functools import wraps
 from typing import Callable, Optional
 
-from utils.console.colors import Color
+from ownjoo_toolkit.console.colors import Color
 
 
 def status_line(
@@ -25,7 +25,7 @@ def status_line(
         Formatted status line string.
 
     Example:
-        >>> from utils.console import status_line, Color
+        >>> from ownjoo_toolkit.console import status_line, Color
         >>> status_line("Status", "OK", Color.GREEN)
         'Status: OK'  (with green color on OK)
     """
@@ -122,7 +122,7 @@ def status_wrapped(status: str = "info") -> Callable:
         Decorator function.
 
     Example:
-        >>> from utils.console import status_wrapped
+        >>> from ownjoo_toolkit.console import status_wrapped
         >>> @status_wrapped(status='ok')
         ... def operation():
         ...     return "Operation complete"

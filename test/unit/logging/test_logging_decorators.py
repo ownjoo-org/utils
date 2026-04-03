@@ -4,7 +4,7 @@ import unittest
 
 from typing import Generator, AsyncGenerator
 
-from utils.logging.decorators import timed_generator, timed_async_generator
+from ownjoo_toolkit.logging.decorators import timed_generator, timed_async_generator
 
 
 class TestLoggingDecorators(unittest.TestCase):

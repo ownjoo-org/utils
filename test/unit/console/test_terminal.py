@@ -4,7 +4,7 @@ import os
 import unittest
 from unittest.mock import patch
 
-from utils.console.terminal import (
+from ownjoo_toolkit.console.terminal import (
     border_chars,
     detect_unicode_support,
     horizontal_line,

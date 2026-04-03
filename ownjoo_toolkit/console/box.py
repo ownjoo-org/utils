@@ -7,7 +7,7 @@ border styles, and the @in_box decorator for wrapping function output.
 from functools import wraps
 from typing import Any, Callable, Optional
 
-from utils.console.terminal import (
+from ownjoo_toolkit.console.terminal import (
     border_chars,
     horizontal_line,
     pad_visible,
@@ -195,7 +195,7 @@ def in_box(
         Decorator function.
 
     Example:
-        >>> from utils.console import in_box
+        >>> from ownjoo_toolkit.console import in_box
         >>> @in_box(style='double', title="Result")
         ... def show_result():
         ...     return "Success!"

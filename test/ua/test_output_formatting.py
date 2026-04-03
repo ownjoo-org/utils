@@ -7,7 +7,7 @@ visually correct formatted output.
 import io
 import unittest
 
-from utils import (
+from ownjoo_toolkit import (
     Box,
     Color,
     ColoredText,

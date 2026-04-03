@@ -37,7 +37,10 @@
       "Bash(cp C:/Users/eq_fu/Documents/work/PycharmProjects/ownjoo_utils/.pre-commit-config.yaml ~/.git-templates/)",
       "Bash(git config:*)",
       "Bash(find . -type f -name \"*.py\" -exec sed -i 's/from ownjoo_utils/from utils/g' {} \\\\;)",
-      "Bash(find . -type f -name \"*.py\" -exec sed -i 's/import ownjoo_utils/import utils/g' {} \\\\;)"
+      "Bash(find . -type f -name \"*.py\" -exec sed -i 's/import ownjoo_utils/import utils/g' {} \\\\;)",
+      "Bash(find . -type f -name \"*.py\" -exec sed -i 's/from utils/from ownjoo_toolkit/g' {} \\\\;)",
+      "Bash(find . -type f -name \"*.py\" -exec sed -i 's/import utils/import ownjoo_toolkit/g' {} \\\\;)",
+      "Bash(sed:*)"
     ]
   }
 }
