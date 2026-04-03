@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Callable
 
-DEFAULT_CONVERTER: Callable = lambda value, expected_type, *args, **kwargs: value
+DEFAULT_CONVERTER: Callable = lambda value, *args, **kwargs: value
 DEFAULT_VALIDATOR: Callable = lambda value, expected_type, *args, **kwargs: isinstance(value, expected_type)
 DEFAULT_SEPARATOR: str = ','
 

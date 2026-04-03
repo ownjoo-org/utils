@@ -159,19 +159,22 @@ def validate(
             converter = DEFAULT_CONVERTER  # pass through
 
     # convert values as needed
+    conversion_succeeded = True
     try:
         result = converter(v, **kwargs)
     except Exception as exc_str:
         logger.debug(f'Failed to parse {v=} with converter {converter}: {exc_str}', exc_info=True)
+        conversion_succeeded = False
 
-    # check validator
-    if not validator:
-        validator = DEFAULT_VALIDATOR
+    # check validator (only if conversion succeeded)
+    if conversion_succeeded:
+        if not callable(validator):
+            validator = DEFAULT_VALIDATOR
 
-    try:
-        is_valid_result = validator(result, exp, **kwargs)
-    except Exception as exc_validation:
-        logger.debug(f'Failed validation: {validator=}: {exc_validation=}', exc_info=True)
+        try:
+            is_valid_result = validator(result, exp, **kwargs)
+        except Exception as exc_validation:
+            logger.debug(f'Failed validation: {validator=}: {exc_validation=}', exc_info=True)
 
     if is_valid_result:
         return result
