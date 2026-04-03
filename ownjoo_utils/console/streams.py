@@ -1,10 +1,13 @@
 """Stream output utilities for writing to stdout and stderr.
 
-Provides a simple Output class for writing messages to standard output and error streams.
+Provides a simple Output class for writing messages to standard output and error streams,
+with support for colored output using ANSI escape codes.
 """
 
 import sys
 from typing import Any, Optional, TextIO
+
+from ownjoo_utils.console.colors import Color
 
 
 class Output:
@@ -79,3 +82,182 @@ class Output:
             Status code: 404
         """
         print(*args, sep=sep, end=end, file=self.stderr, flush=flush)
+
+    def out_colored(
+        self,
+        *args,
+        color: str = "",
+        sep: str = " ",
+        end: str = "\n",
+        flush: bool = False,
+    ) -> None:
+        """Write colored output to stdout.
+
+        Args:
+            *args: Values to write (converted to strings via str()).
+            color: ANSI color code to apply (e.g., Color.RED, Color.BOLD + Color.GREEN).
+                   Default: no color.
+            sep: Separator between args (default: space).
+            end: String appended after the last value (default: newline).
+            flush: Whether to force flush the stream (default: False).
+
+        Example:
+            >>> from ownjoo_utils.console import Output, Color
+            >>> output = Output()
+            >>> output.out_colored("Success", color=Color.GREEN)
+            >>> output.out_colored("Warning", color=Color.BOLD + Color.YELLOW)
+        """
+        if color:
+            colored_text = color + sep.join(str(arg) for arg in args) + Color.RESET
+            print(colored_text, sep="", end=end, file=self.stdout, flush=flush)
+        else:
+            print(*args, sep=sep, end=end, file=self.stdout, flush=flush)
+
+    def err_colored(
+        self,
+        *args,
+        color: str = "",
+        sep: str = " ",
+        end: str = "\n",
+        flush: bool = False,
+    ) -> None:
+        """Write colored output to stderr.
+
+        Args:
+            *args: Values to write (converted to strings via str()).
+            color: ANSI color code to apply (e.g., Color.RED, Color.BOLD + Color.YELLOW).
+                   Default: no color.
+            sep: Separator between args (default: space).
+            end: String appended after the last value (default: newline).
+            flush: Whether to force flush the stream (default: False).
+
+        Example:
+            >>> from ownjoo_utils.console import Output, Color
+            >>> output = Output()
+            >>> output.err_colored("Error", color=Color.RED)
+            >>> output.err_colored("Fatal", color=Color.BOLD + Color.RED)
+        """
+        if color:
+            colored_text = color + sep.join(str(arg) for arg in args) + Color.RESET
+            print(colored_text, sep="", end=end, file=self.stderr, flush=flush)
+        else:
+            print(*args, sep=sep, end=end, file=self.stderr, flush=flush)
+
+    def out_red(
+        self,
+        *args,
+        sep: str = " ",
+        end: str = "\n",
+        flush: bool = False,
+    ) -> None:
+        """Write red text to stdout.
+
+        Args:
+            *args: Values to write (converted to strings via str()).
+            sep: Separator between args (default: space).
+            end: String appended after the last value (default: newline).
+            flush: Whether to force flush the stream (default: False).
+        """
+        self.out_colored(*args, color=Color.RED, sep=sep, end=end, flush=flush)
+
+    def out_green(
+        self,
+        *args,
+        sep: str = " ",
+        end: str = "\n",
+        flush: bool = False,
+    ) -> None:
+        """Write green text to stdout.
+
+        Args:
+            *args: Values to write (converted to strings via str()).
+            sep: Separator between args (default: space).
+            end: String appended after the last value (default: newline).
+            flush: Whether to force flush the stream (default: False).
+        """
+        self.out_colored(*args, color=Color.GREEN, sep=sep, end=end, flush=flush)
+
+    def out_yellow(
+        self,
+        *args,
+        sep: str = " ",
+        end: str = "\n",
+        flush: bool = False,
+    ) -> None:
+        """Write yellow text to stdout.
+
+        Args:
+            *args: Values to write (converted to strings via str()).
+            sep: Separator between args (default: space).
+            end: String appended after the last value (default: newline).
+            flush: Whether to force flush the stream (default: False).
+        """
+        self.out_colored(*args, color=Color.YELLOW, sep=sep, end=end, flush=flush)
+
+    def out_blue(
+        self,
+        *args,
+        sep: str = " ",
+        end: str = "\n",
+        flush: bool = False,
+    ) -> None:
+        """Write blue text to stdout.
+
+        Args:
+            *args: Values to write (converted to strings via str()).
+            sep: Separator between args (default: space).
+            end: String appended after the last value (default: newline).
+            flush: Whether to force flush the stream (default: False).
+        """
+        self.out_colored(*args, color=Color.BLUE, sep=sep, end=end, flush=flush)
+
+    def err_red(
+        self,
+        *args,
+        sep: str = " ",
+        end: str = "\n",
+        flush: bool = False,
+    ) -> None:
+        """Write red text to stderr.
+
+        Args:
+            *args: Values to write (converted to strings via str()).
+            sep: Separator between args (default: space).
+            end: String appended after the last value (default: newline).
+            flush: Whether to force flush the stream (default: False).
+        """
+        self.err_colored(*args, color=Color.RED, sep=sep, end=end, flush=flush)
+
+    def err_green(
+        self,
+        *args,
+        sep: str = " ",
+        end: str = "\n",
+        flush: bool = False,
+    ) -> None:
+        """Write green text to stderr.
+
+        Args:
+            *args: Values to write (converted to strings via str()).
+            sep: Separator between args (default: space).
+            end: String appended after the last value (default: newline).
+            flush: Whether to force flush the stream (default: False).
+        """
+        self.err_colored(*args, color=Color.GREEN, sep=sep, end=end, flush=flush)
+
+    def err_yellow(
+        self,
+        *args,
+        sep: str = " ",
+        end: str = "\n",
+        flush: bool = False,
+    ) -> None:
+        """Write yellow text to stderr.
+
+        Args:
+            *args: Values to write (converted to strings via str()).
+            sep: Separator between args (default: space).
+            end: String appended after the last value (default: newline).
+            flush: Whether to force flush the stream (default: False).
+        """
+        self.err_colored(*args, color=Color.YELLOW, sep=sep, end=end, flush=flush)

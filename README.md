@@ -56,6 +56,33 @@ output.out("This goes to the StringIO")
 print(file_stream.getvalue())  # This goes to the StringIO\n
 ```
 
+### Colored Output
+
+```python
+from ownjoo_utils import Output, Color
+
+output = Output()
+
+# Shorthand methods for common colors
+output.out_red("Error message")      # Red text to stdout
+output.out_green("Success!")         # Green text to stdout
+output.out_yellow("Warning")         # Yellow text to stdout
+output.out_blue("Information")       # Blue text to stdout
+
+# Shorthand methods for stderr
+output.err_red("Critical error")     # Red text to stderr
+output.err_yellow("Minor warning")   # Yellow text to stderr
+
+# Custom color combinations
+output.out_colored("Bold Red", color=Color.BOLD + Color.RED)
+output.out_colored("Cyan background", color=Color.BG_CYAN)
+
+# Use Color constants directly
+from ownjoo_utils.console import Color
+colored_text = Color.colorize("Important", Color.BOLD + Color.RED)
+print(colored_text)
+```
+
 ### Parsing & Validation
 
 ```python
@@ -182,6 +209,106 @@ output.err("to stderr")
 
 print(stdout_capture.getvalue())  # to stdout\n
 print(stderr_capture.getvalue())  # to stderr\n
+```
+
+##### `out_colored(*args, color='', sep=' ', end='\n', flush=False)`
+
+Write colored text to stdout using ANSI escape codes.
+
+- **Parameters:**
+  - `*args`: Values to write (converted to strings)
+  - `color` (str): ANSI color code (e.g., `Color.RED`, `Color.BOLD + Color.GREEN`)
+  - `sep` (str): Separator between args. Default: space
+  - `end` (str): String appended after the last value. Default: newline
+  - `flush` (bool): Force flush the stream. Default: False
+
+**Example:**
+
+```python
+from ownjoo_utils import Output, Color
+
+output = Output()
+output.out_colored("Error", color=Color.RED)
+output.out_colored("Bold Green", color=Color.BOLD + Color.GREEN)
+output.out_colored("Status", "OK", color=Color.BLUE)
+```
+
+##### `err_colored(*args, color='', sep=' ', end='\n', flush=False)`
+
+Write colored text to stderr using ANSI escape codes. Same parameters as `out_colored()`.
+
+**Example:**
+
+```python
+output.err_colored("Critical error", color=Color.BOLD + Color.RED)
+```
+
+##### Shorthand Color Methods
+
+Convenient methods for common colors:
+
+- `out_red(*args, ...)` — Red text to stdout
+- `out_green(*args, ...)` — Green text to stdout
+- `out_yellow(*args, ...)` — Yellow text to stdout
+- `out_blue(*args, ...)` — Blue text to stdout
+- `err_red(*args, ...)` — Red text to stderr
+- `err_green(*args, ...)` — Green text to stderr
+- `err_yellow(*args, ...)` — Yellow text to stderr
+
+**Example:**
+
+```python
+output = Output()
+output.out_green("Success!")
+output.out_red("Error occurred")
+output.err_yellow("Warning: deprecated")
+```
+
+#### `Color` - ANSI Color Constants and Utilities
+
+Static class providing ANSI color codes for terminal output.
+
+**Attributes:**
+
+- **Reset:** `Color.RESET` — Reset to default terminal color
+- **Styles:** `Color.BOLD`, `Color.DIM`
+- **Foreground colors:** `Color.RED`, `Color.GREEN`, `Color.YELLOW`, `Color.BLUE`, `Color.MAGENTA`, `Color.CYAN`, `Color.WHITE`
+- **Background colors:** `Color.BG_RED`, `Color.BG_GREEN`, `Color.BG_YELLOW`, `Color.BG_BLUE`, `Color.BG_MAGENTA`, `Color.BG_CYAN`, `Color.BG_WHITE`
+
+**Static Methods:**
+
+##### `Color.colorize(text, color='', reset=True)`
+
+Apply ANSI color codes to text.
+
+- **Parameters:**
+  - `text` (str): The text to colorize
+  - `color` (str): Color code to apply (can be combined with `+`, e.g., `Color.BOLD + Color.RED`)
+  - `reset` (bool): Append `Color.RESET` at the end. Default: True
+
+- **Returns:** The text wrapped in color codes
+
+**Example:**
+
+```python
+from ownjoo_utils import Color
+
+# Single color
+colored = Color.colorize("Error", Color.RED)
+
+# Combined colors
+important = Color.colorize("CRITICAL", Color.BOLD + Color.RED)
+
+# No reset (continue coloring next output)
+colored = Color.colorize("text", Color.GREEN, reset=False)
+```
+
+**Available Color Combinations:**
+
+```python
+Color.BOLD + Color.RED          # Bold red text
+Color.DIM + Color.YELLOW        # Dim yellow text
+Color.BOLD + Color.BG_BLUE      # Bold text on blue background
 ```
 
 ### `parsing` Module
