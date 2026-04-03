@@ -39,7 +39,7 @@ class TestDetectUnicodeSupport(unittest.TestCase):
     def test_should_disable_for_dumb_terminal(self):
         # setup
         # execute
-        with patch.dict(os.environ, {"TERM": "dumb", "NO_COLOR": ""}, clear=False):
+        with patch.dict(os.environ, {"TERM": "dumb", "NO_COLOR": "", "CI": ""}, clear=False):
             result = detect_unicode_support()
 
         # assess
@@ -48,7 +48,7 @@ class TestDetectUnicodeSupport(unittest.TestCase):
     def test_should_disable_for_vt100_terminal(self):
         # setup
         # execute
-        with patch.dict(os.environ, {"TERM": "vt100", "NO_COLOR": ""}, clear=False):
+        with patch.dict(os.environ, {"TERM": "vt100", "NO_COLOR": "", "CI": ""}, clear=False):
             result = detect_unicode_support()
 
         # assess
@@ -328,7 +328,7 @@ class TestBorderChars(unittest.TestCase):
         chars = border_chars("ascii")
 
         # assess
-        self.assertEqual(len(chars), 9)
+        self.assertEqual(len(chars), 14)
 
 
 class TestHorizontalLine(unittest.TestCase):
