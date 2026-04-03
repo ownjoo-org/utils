@@ -311,6 +311,180 @@ Color.DIM + Color.YELLOW        # Dim yellow text
 Color.BOLD + Color.BG_BLUE      # Bold text on blue background
 ```
 
+### Formatting Utilities
+
+#### `Table` - Smart Table Builder
+
+Build ASCII/Unicode tables with automatic input detection and formatting.
+
+```python
+from ownjoo_utils import Table, tabulated
+
+# Create a table with dict input (auto-detects headers)
+data = [
+    {"name": "Alice", "status": "OK"},
+    {"name": "Bob", "status": "ERROR"},
+]
+table = Table()
+table.add_rows(data)
+print(table)
+
+# Create a table with explicit headers
+table = Table(headers=["Name", "Status", "Duration"], columns=3)
+table.add_row("Task 1", "OK", "2.5s")
+table.add_row("Task 2", "ERROR", "1.2s")
+print(table)
+
+# Use as a decorator
+@tabulated(headers=["ID", "Value"])
+def get_results():
+    yield (1, "First")
+    yield (2, "Second")
+    yield (3, "Third")
+
+get_results()  # Prints results in formatted table
+
+# Customize table appearance
+table = Table(headers=["A", "B"], style="rounded", padding=2)
+table.add_row("1", "2")
+print(table)  # Uses rounded Unicode borders
+```
+
+**Styles:** `'auto'` (auto-detect Unicode support), `'ascii'`, `'rounded'`, `'double'`, `'single'`, `'none'`
+
+**Smart Input Detection:**
+- Dict input → extracts headers from keys
+- List of tuples (2 elements) → treats as key-value pairs
+- List of tuples (3+ elements) → treats as rows
+- List of strings → treats each as a row
+
+#### `Box` - Text Box Builder
+
+Wrap text in decorative boxes with multiple border styles.
+
+```python
+from ownjoo_utils import Box, in_box
+
+# Create a simple box
+box = Box(style="rounded", padding=1)
+box.add_line("Hello from a box")
+box.add_line("Multiple lines supported")
+print(box)
+
+# Box with title
+box = Box(style="double", title="Status", width=30)
+box.add_line("Operation complete")
+print(box)
+
+# Use as a decorator
+@in_box(style="rounded", title="Result")
+def show_result():
+    return "Success!"
+
+show_result()  # Prints result in a box
+
+# Add multiple lines at once
+box = Box(style="ascii")
+box.add_lines(["Line 1", "Line 2", "Line 3"])
+print(box)
+```
+
+**Styles:** `'auto'`, `'ascii'`, `'rounded'`, `'double'`, `'single'`, `'solid'`, `'none'`
+
+#### `status_line` - Format Label-Value Pairs
+
+Format simple status lines with optional colors.
+
+```python
+from ownjoo_utils import status_line, Color
+
+# Basic status line
+output = status_line("Status", "OK")  # Status: OK
+
+# With color
+output = status_line("Status", "OK", color=Color.GREEN)
+
+# Custom separator
+output = status_line("Name", "Alice", sep=" = ")  # Name = Alice
+```
+
+#### `progress_bar` - Text-Based Progress Bar
+
+Display a text-based progress bar with percentage.
+
+```python
+from ownjoo_utils import progress_bar
+
+# Default bar
+bar = progress_bar(75)  # ██████████████░░░░░░   75%
+
+# Custom width and characters
+bar = progress_bar(50, width=10, filled="=", empty="-")  # =====-----  50%
+
+# With label
+bar = progress_bar(30, width=20, label="Loading")  # Loading: ██████░░░░░░░░░░░░   30%
+
+# All variations
+progress_bar(0)      # Empty bar
+progress_bar(50)     # Half-filled bar
+progress_bar(100)    # Full bar (all filled)
+```
+
+#### `status_badge` - Semantic Status Indicators
+
+Display colored status badges with semantic meaning.
+
+```python
+from ownjoo_utils import status_badge
+
+# Semantic status badges
+badge = status_badge("READY", "ok")        # [OK] READY (green)
+badge = status_badge("FAILED", "error")    # [ERROR] FAILED (red)
+badge = status_badge("PARTIAL", "warning") # [WARNING] PARTIAL (yellow)
+badge = status_badge("INFO", "info")       # [INFO] INFO (cyan)
+```
+
+**Status types:** `'ok'` (green), `'error'` (red), `'warning'` (yellow), `'info'` (cyan, default)
+
+#### Decorator: `@status_wrapped` - Wrap Function Output with Status
+
+Automatically prepend a status badge to function output.
+
+```python
+from ownjoo_utils import status_wrapped
+
+@status_wrapped(status="ok")
+def operation():
+    return "Operation complete"
+
+operation()  # Prints: [OK] Operation complete (in green)
+
+@status_wrapped(status="error")
+def failed_operation():
+    return "Something went wrong"
+
+failed_operation()  # Prints: [ERROR] Something went wrong (in red)
+```
+
+**Example: Combining Formatters**
+
+```python
+from ownjoo_utils import Table, Box, status_line, Color
+
+# Use formatters together for complex layouts
+results = Table(headers=["Task", "Status"])
+results.add_row("Build", "OK")
+results.add_row("Tests", "OK")
+results.add_row("Deploy", "FAILED")
+
+box = Box(style="double", title="Build Summary")
+box.add_line(str(results))
+print(box)
+
+# Status indicator with color
+print(status_line("Overall", "FAILED", color=Color.RED))
+```
+
 ### `parsing` Module
 
 #### `validate(v, exp=None, default=None, converter=None, validator=None, **kwargs)`
