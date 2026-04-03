@@ -7,7 +7,7 @@ name = "ownjoo_utils"
 version = "0.0.8"
 description = "Centralized shared utilities for ownjoo-org projects: type validation, data parsing, and progress logging"
 authors = [
-    { name = "ownjoo-org", email = "info@ownjoo-org.example.com" }
+    { name = "ownjoo-org", email = "speedy@ownjoo.org" }
 ]
 license = { text = "MIT" }
 requires-python = ">=3.10"
@@ -27,8 +27,10 @@ keywords = ["utilities", "validation", "parsing", "logging", "generators"]
 readme = "README.md"
 
 [project.urls]
+Homepage = "https://github.com/ownjoo-org/utils"
 Repository = "https://github.com/ownjoo-org/utils"
 "Bug Tracker" = "https://github.com/ownjoo-org/utils/issues"
+Changelog = "https://github.com/ownjoo-org/utils/releases"
 Documentation = "https://github.com/ownjoo-org/utils#readme"
 
 [project.optional-dependencies]
@@ -38,6 +40,7 @@ dev = [
     "black>=23.0",
     "ruff>=0.1.0",
     "mypy>=1.0",
+    "pylint>=2.0",
 ]
 
 [tool.black]
