@@ -24,14 +24,14 @@ pip install ownjoo-toolkit
 Or install from the repository:
 
 ```bash
-pip install git+https://github.com/ownjoo-org/utils.git
+pip install git+https://github.com/ownjoo-org/ownjoo-toolkit.git
 ```
 
 For local development:
 
 ```bash
-git clone https://github.com/ownjoo-org/utils.git
-cd utils
+git clone https://github.com/ownjoo-org/ownjoo-toolkit.git
+cd ownjoo-toolkit
 pip install -e ".[dev]"
 ```
 
@@ -674,8 +674,8 @@ async for item in fetch_items():
 ### Setup
 
 ```bash
-git clone https://github.com/ownjoo-org/utils.git
-cd utils
+git clone https://github.com/ownjoo-org/ownjoo-toolkit.git
+cd ownjoo-toolkit
 pip install -e ".[dev]"
 ```
 
@@ -747,5 +747,5 @@ All changes to the public API should include thorough documentation and example 
 ## Support
 
 For issues, questions, or contributions, please use the GitHub repository:
-- Issues: [github.com/ownjoo-org/utils/issues](https://github.com/ownjoo-org/utils/issues)
-- Pull Requests: [github.com/ownjoo-org/utils/pulls](https://github.com/ownjoo-org/utils/pulls)
+- Issues: [github.com/ownjoo-org/ownjoo-toolkit/issues](https://github.com/ownjoo-org/ownjoo-toolkit/issues)
+- Pull Requests: [github.com/ownjoo-org/ownjoo-toolkit/pulls](https://github.com/ownjoo-org/ownjoo-toolkit/pulls)

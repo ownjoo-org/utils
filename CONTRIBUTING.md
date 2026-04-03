@@ -26,8 +26,8 @@ This repository follows the ownjoo-org standards and principles defined in [CLAU
 ### 1. Setup Your Environment
 
 ```bash
-git clone https://github.com/ownjoo-org/utils.git
-cd utils
+git clone https://github.com/ownjoo-org/ownjoo-toolkit.git
+cd ownjoo-toolkit
 pip install -e ".[dev]"
 ```
 
