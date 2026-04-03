@@ -11,7 +11,7 @@ class TestAsyncDecorators(unittest.TestCase):
 
     def test_placeholder(self):
         """Placeholder test. Remove when async utilities are implemented."""
-        self.assertTrue(True)
+        self.assertTrue(True)  # pylint: disable=redundant-unittest-assert
 
 
 if __name__ == '__main__':

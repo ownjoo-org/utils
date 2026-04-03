@@ -140,7 +140,7 @@ class TestColoredText(unittest.TestCase):
 
         # assess
         self.assertEqual(len(segments), 3)
-        for i, (segment_text, color) in enumerate(text):
+        for _, (segment_text, color) in enumerate(text):
             self.assertIsNotNone(segment_text)
             self.assertIsNotNone(color)
 

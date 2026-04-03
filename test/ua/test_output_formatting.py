@@ -224,7 +224,9 @@ class TestBoxFormatting(unittest.TestCase):
         result_pad = str(box_pad)
 
         # With padding should be wider
-        self.assertGreater(len(result_pad.split("\n")[0]), len(result_no_pad.split("\n")[0]))
+        self.assertGreater(
+            len(result_pad.split("\n", maxsplit=1)[0]), len(result_no_pad.split("\n", maxsplit=1)[0])
+        )
 
     def test_box_with_fixed_width(self):
         """Test box with fixed width."""
@@ -317,18 +319,18 @@ class TestStatusIndicators(unittest.TestCase):
 
     def test_progress_bar_with_label(self):
         """Test progress bar with label."""
-        bar = progress_bar(75, width=20, label="Download")
+        p_bar = progress_bar(75, width=20, label="Download")
 
-        self.assertIn("Download", bar)
-        self.assertIn("75%", bar)
+        self.assertIn("Download", p_bar)
+        self.assertIn("75%", p_bar)
 
     def test_progress_bar_custom_characters(self):
         """Test progress bar with custom fill/empty characters."""
-        bar = progress_bar(50, width=10, filled="=", empty="-")
+        p_bar = progress_bar(50, width=10, filled="=", empty="-")
 
-        self.assertIn("=", bar)
-        self.assertIn("-", bar)
-        self.assertIn("50%", bar)
+        self.assertIn("=", p_bar)
+        self.assertIn("-", p_bar)
+        self.assertIn("50%", p_bar)
 
 
 class TestIntegratedOutput(unittest.TestCase):

@@ -8,22 +8,7 @@ Usage:
     PYTHONIOENCODING=utf-8 python test/ua/demo_visual_output.py
 """
 
-import sys
-import os
-
-# Add parent directory to path for local imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-
-from ownjoo_utils import (
-    Box,
-    Color,
-    ColoredText,
-    Output,
-    Table,
-    progress_bar,
-    status_badge,
-    status_line,
-)
+from ownjoo_utils import Box, Color, ColoredText, Output, Table, progress_bar, status_badge, status_line
 
 output = Output()
 
