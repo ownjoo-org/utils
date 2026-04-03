@@ -60,7 +60,7 @@ def timed_generator(
         logging.basicConfig(
             format=LOG_FORMAT,
             level=logging.INFO,
-            datefmt=TimeFormats.date_and_time.value,
+            datefmt=TimeFormats.DATE_AND_TIME.value,
         )
         logger = logging.getLogger(__name__)
 
@@ -133,7 +133,7 @@ def timed_async_generator(
         logging.basicConfig(
             format=LOG_FORMAT,
             level=logging.INFO,
-            datefmt=TimeFormats.date_and_time.value,
+            datefmt=TimeFormats.DATE_AND_TIME.value,
         )
         logger = logging.getLogger(__name__)
 
