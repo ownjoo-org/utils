@@ -1,6 +1,6 @@
 """Tests for async_chunks function."""
 import asyncio
-from unittest import IsolatedAsyncioTestCase
+import unittest
 
 from ownjoo_toolkit.asynchronous.async_chunks import a_chunks
 
@@ -25,7 +25,7 @@ async def collect_chunks(chunk_size: int, async_iterable):
     return result
 
 
-class TestAsyncChunks(IsolatedAsyncioTestCase):
+class TestAsyncChunks(unittest.TestCase):
     """Tests for a_chunks function."""
 
     def test_basic_chunking(self):
