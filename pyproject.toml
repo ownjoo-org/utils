@@ -36,7 +36,6 @@ Documentation = "https://github.com/ownjoo-org/utils#readme"
 [project.optional-dependencies]
 dev = [
     "pytest>=7.0",
-    "pytest-asyncio>=0.21.0",
     "pytest-cov>=4.0",
     "black>=23.0",
     "ruff>=0.1.0",
@@ -95,9 +94,7 @@ python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = "--strict-markers --tb=short"
-asyncio_mode = "auto"
 markers = [
-    "asyncio: marks tests as async",
     "integration: integration tests",
     "unit: unit tests",
 ]
