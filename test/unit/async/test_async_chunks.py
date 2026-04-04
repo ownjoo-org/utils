@@ -1,6 +1,8 @@
 """Tests for async_chunks function."""
 from unittest import IsolatedAsyncioTestCase
 
+import pytest
+
 from ownjoo_toolkit.asynchronous.async_chunks import a_chunks
 
 
@@ -19,6 +21,7 @@ async def async_list(items: list):
 class TestAsyncChunks(IsolatedAsyncioTestCase):
     """Tests for a_chunks function."""
 
+    @pytest.mark.asyncio
     async def test_basic_chunking(self):
         """Test basic chunking with multiple complete chunks."""
         result = []
@@ -26,6 +29,7 @@ class TestAsyncChunks(IsolatedAsyncioTestCase):
             result.append(chunk)
         self.assertEqual(result, [[0, 1, 2], [3, 4, 5], [6, 7, 8]])
 
+    @pytest.mark.asyncio
     async def test_partial_final_chunk(self):
         """Test that remaining items smaller than chunk_size are yielded."""
         result = []
@@ -33,6 +37,7 @@ class TestAsyncChunks(IsolatedAsyncioTestCase):
             result.append(chunk)
         self.assertEqual(result, [[0, 1, 2], [3, 4, 5], [6]])
 
+    @pytest.mark.asyncio
     async def test_chunk_size_one(self):
         """Test chunking with size 1."""
         result = []
@@ -40,6 +45,7 @@ class TestAsyncChunks(IsolatedAsyncioTestCase):
             result.append(chunk)
         self.assertEqual(result, [[0], [1], [2]])
 
+    @pytest.mark.asyncio
     async def test_chunk_size_larger_than_items(self):
         """Test chunk size larger than number of items."""
         result = []
@@ -47,6 +53,7 @@ class TestAsyncChunks(IsolatedAsyncioTestCase):
             result.append(chunk)
         self.assertEqual(result, [[0, 1, 2]])
 
+    @pytest.mark.asyncio
     async def test_empty_async_iterable(self):
         """Test with empty async iterable."""
         result = []
@@ -54,6 +61,7 @@ class TestAsyncChunks(IsolatedAsyncioTestCase):
             result.append(chunk)
         self.assertEqual(result, [])
 
+    @pytest.mark.asyncio
     async def test_single_item(self):
         """Test with single item."""
         result = []
@@ -61,6 +69,7 @@ class TestAsyncChunks(IsolatedAsyncioTestCase):
             result.append(chunk)
         self.assertEqual(result, [[0]])
 
+    @pytest.mark.asyncio
     async def test_exact_multiple_of_chunk_size(self):
         """Test when items are exact multiple of chunk_size."""
         result = []
@@ -71,6 +80,7 @@ class TestAsyncChunks(IsolatedAsyncioTestCase):
             [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9], [10, 11, 12, 13, 14]],
         )
 
+    @pytest.mark.asyncio
     async def test_with_string_items(self):
         """Test chunking with non-numeric items."""
         result = []
@@ -79,6 +89,7 @@ class TestAsyncChunks(IsolatedAsyncioTestCase):
             result.append(chunk)
         self.assertEqual(result, [["a", "b"], ["c", "d"], ["e"]])
 
+    @pytest.mark.asyncio
     async def test_with_falsy_values(self):
         """Test chunking with falsy values like 0, False, empty strings."""
         result = []
@@ -87,6 +98,7 @@ class TestAsyncChunks(IsolatedAsyncioTestCase):
             result.append(chunk)
         self.assertEqual(result, [[0, False], ["", None], [[], 1]])
 
+    @pytest.mark.asyncio
     async def test_with_mixed_types(self):
         """Test chunking with mixed types."""
         result = []
