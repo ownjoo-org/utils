@@ -8,3 +8,6 @@ This module is planned for future async utilities such as:
 
 Currently under development.
 """
+from ownjoo_toolkit.asynchronous.async_chunks import a_chunks
+
+__all__ = ["a_chunks"]
