@@ -9,20 +9,21 @@ This module provides functions to safely parse and validate values, including:
 
 import logging
 from datetime import datetime
-from typing import Any, Callable, Optional, Type, Union, Iterable
+from typing import Any, Callable, Iterable, Optional, Type, TypeVar, Union
 
-from ownjoo_toolkit.parsing.consts import DEFAULT_SEPARATOR, DEFAULT_VALIDATOR, TimeFormats, DEFAULT_CONVERTER
+T = TypeVar('T')
+R = TypeVar('R')
+
+from ownjoo_toolkit.parsing.consts import DEFAULT_CONVERTER, DEFAULT_SEPARATOR, DEFAULT_VALIDATOR, TimeFormats
 
 logger = logging.getLogger(__name__)
 
-
-def str_to_list(v: Optional[str] = None, separator: str = DEFAULT_SEPARATOR, **kwargs) -> Optional[list[str]]:
+def str_to_list(v: Optional[str] = None, separator: str = DEFAULT_SEPARATOR) -> Optional[list[str]]:
     """Convert a string to a list by splitting on a separator.
 
     Args:
         v: The string to split. If not a string, returns unchanged.
         separator: The delimiter to split on (default: comma). Empty string returns value unchanged.
-        **kwargs: Additional keyword arguments (unused, for compatibility).
 
     Returns:
         A list of strings if v is a non-empty string with valid separator, otherwise the original value.
@@ -44,9 +45,7 @@ def str_to_list(v: Optional[str] = None, separator: str = DEFAULT_SEPARATOR, **k
 
 def get_datetime(
         v: Union[None, datetime, float, str] = None,
-        *args,
         format_str: Optional[str] = None,
-        **kwargs
 ) -> Optional[datetime]:
     """Parse a value into a datetime object from multiple input formats.
 
@@ -57,8 +56,8 @@ def get_datetime(
 
     Args:
         v: The value to parse. Can be None, datetime, float/int timestamp, or string.
-        format_str: Optional custom datetime format string (strptime format). If provided, attempts parsing with this format first.
-        **kwargs: Additional keyword arguments (unused, for compatibility).
+        format_str: Optional custom datetime format string (strptime format). If provided, attempts parsing with this
+        format first.
 
     Returns:
         A datetime object if parsing succeeds, otherwise None.
@@ -78,43 +77,35 @@ def get_datetime(
         datetime.datetime(1994, 11, 6, 8, 49, 37)
     """
     result: Optional[datetime] = None
-    if v is None:
-        return None
-    elif isinstance(v, datetime):
-        return v
-    elif isinstance(v, (float, int)):  # if number treat as a timestamp (seconds from epoch)
-        try:
+    try:
+        if isinstance(v, datetime):
+            result = v
+        elif isinstance(v, (float, int)):  # if number treat as a timestamp (seconds from epoch)
             result = datetime.fromtimestamp(v)
-            return result
-        except Exception as exc_num:
-            logger.debug(f'Failed to parse {v=} as timestamp: {exc_num}')
-            return None
-    elif isinstance(format_str, str):
-        try:
+        elif isinstance(v, str) and isinstance(format_str, str):
             result = datetime.strptime(v, format_str)
-            return result
-        except Exception as exc_str:
-            logger.debug(f'Failed to parse {v=} as {format_str}: {exc_str}')
-            return None
-    elif isinstance(v, str):
-        for time_format in TimeFormats:  # if str try to parse the str from a known format
-            try:
-                result = datetime.strptime(v, time_format.value)
-                return result
-            except Exception:
-                # Silently try next format instead of logging each failure
-                continue
-    return None
+        elif isinstance(v, str):
+            for time_format in TimeFormats:  # if str try to parse the str from a known format
+                try:
+                    result = datetime.strptime(v, time_format.value)
+                except Exception:
+                    # Silently try next format instead of logging each failure
+                    continue
+        else:
+            logger.warning(f'Unusable {v=}, {format_str=}. Returning {result=}')
+    except Exception as exc:
+        logger.debug(f'Failed to parse {v=}: {exc}')
+    return result
 
 
 def validate(
         v: Any,
-        exp: Type = None,
-        default: Any = None,
+        exp: Type[T] = None,
+        default: Optional[T] = None,
         converter: Callable = None,
         validator: Optional[Callable] = DEFAULT_VALIDATOR,
         **kwargs
-) -> Any:
+) -> Optional[T]:
     """Validate and optionally convert a value with a custom converter and validator.
 
     This is a generic validation utility that:
@@ -176,18 +167,15 @@ def validate(
         except Exception as exc_validation:
             logger.debug(f'Failed validation: {validator=}: {exc_validation=}', exc_info=True)
 
-    if is_valid_result:
-        return result
-    else:
-        return default
+    return result if is_valid_result else default
 
 
 def get_value(
         src: Union[dict, Iterable],
         path: Union[None, int, list, str] = None,
-        post_processor: Callable = validate,
+        post_processor: Callable[..., R] = validate,
         **kwargs
-) -> Optional[Any]:
+) -> Optional[R]:
     """Extract and post-process a value from a nested data structure.
 
     Recursively navigates through nested dicts and lists using a path of keys/indices,
@@ -239,12 +227,6 @@ def get_value(
         return get_value(src=result, path=remaining_path, post_processor=post_processor, **kwargs)
 
     # Apply post-processor if result was found (not None) or if no result
-    if callable(post_processor):
-        # Only process the result if extraction succeeded (result is not None)
-        if result is not None:
-            return post_processor(result, **kwargs)
-        else:
-            # Extraction failed, return default from post_processor
-            return post_processor(result, **kwargs)
-    else:
-        return result  # return found value without post-processing
+    if callable(post_processor) and result is not None:
+        return post_processor(result, **kwargs)
+    return result  # return found value without post-processing
