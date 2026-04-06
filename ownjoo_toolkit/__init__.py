@@ -29,14 +29,14 @@ from ownjoo_toolkit.console import (
     tabulated,
 )
 from ownjoo_toolkit.logging import timed_async_generator, timed_generator
-from ownjoo_toolkit.parsing import validate, get_datetime, get_value, str_to_list
+from ownjoo_toolkit.parsing import validate, get_datetime, dig, str_to_list
 
 __all__ = [
     'timed_async_generator',
     'timed_generator',
     'validate',
     'get_datetime',
-    'get_value',
+    'dig',
     'str_to_list',
     'Output',
     'Color',
