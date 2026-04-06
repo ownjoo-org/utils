@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "oj-toolkit"
-version = "0.1.3"
+version = "0.1.4"
 description = "Centralized shared utilities for ownjoo-org projects: type validation, data parsing, and progress logging"
 authors = [
     { name = "Speedy", email = "speedy@ownjoo.org" }
