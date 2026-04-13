@@ -3,6 +3,8 @@
 import asyncio
 import logging
 
+from oj_toolkit.logging.formatters import HumanFormatter
+
 
 class BroadcastHandler(logging.Handler):
     """
@@ -35,6 +37,7 @@ class BroadcastHandler(logging.Handler):
 
     def __init__(self, maxsize: int = 500) -> None:
         super().__init__()
+        self.setFormatter(HumanFormatter())
         self._maxsize = maxsize
         self._subscribers: set[asyncio.Queue] = set()
 

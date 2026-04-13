@@ -41,9 +41,6 @@ def configure_logging(
             ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL').
             Falls back to LOG_LEVEL env var, then logging.WARNING.
     """
-    if logging.root.handlers:
-        return
-
     if isinstance(level, int):
         numeric_level = level
     else:
@@ -51,6 +48,11 @@ def configure_logging(
         numeric_level = logging.getLevelName(resolved_level.upper())
         if not isinstance(numeric_level, int):
             numeric_level = logging.WARNING
+
+    logging.root.setLevel(numeric_level)
+
+    if logging.root.handlers:
+        return
 
     handler = logging.StreamHandler(sys.stdout)
     if env == 'local':
@@ -60,7 +62,6 @@ def configure_logging(
         handler.setFormatter(JsonFormatter(service=service, env=env))
 
     logging.root.addHandler(handler)
-    logging.root.setLevel(numeric_level)
 
     for name in NOISY_LOGGERS:
         logging.getLogger(name).setLevel(logging.WARNING)
