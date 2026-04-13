@@ -8,7 +8,40 @@ style selection, etc.).
 import os
 import re
 import sys
-from typing import Optional, Tuple
+
+
+def detect_color_support() -> bool:
+    """Detect if the terminal supports ANSI color codes.
+
+    Checks in order:
+    - stdout is a real TTY (not piped or redirected to a file)
+    - NO_COLOR env var (https://no-color.org/) — accessibility/compliance
+    - TERM=dumb — explicitly no capabilities
+    - COLORTERM env var — explicit truecolor declaration
+
+    Returns:
+        True if color output is appropriate, False otherwise.
+
+    Example:
+        >>> if detect_color_support():
+        ...     print(Color.RED + "error" + Color.RESET)
+        ... else:
+        ...     print("error")
+    """
+    if not sys.stdout.isatty():
+        return False
+
+    if os.environ.get('NO_COLOR'):
+        return False
+
+    term = os.environ.get('TERM', '').lower()
+    if term == 'dumb':
+        return False
+
+    if os.environ.get('COLORTERM') in ('truecolor', '24bit'):
+        return True
+
+    return True
 
 
 def detect_unicode_support() -> bool:
@@ -187,7 +220,7 @@ def truncate_visible(text: str, width: int, suffix: str = "...") -> str:
     return stripped[:target_length] + suffix
 
 
-def border_chars(style: str) -> Tuple[str, str, str, str, str, str, str, str, str, str, str, str, str]:
+def border_chars(style: str) -> tuple[str, ...]:
     """Get border characters for a given style.
 
     Returns the 13 border characters needed for a table:
@@ -221,7 +254,7 @@ def border_chars(style: str) -> Tuple[str, str, str, str, str, str, str, str, st
     return styles.get(style, styles["ascii"])
 
 
-def horizontal_line(width: int, style: str = "ascii", char: Optional[str] = None) -> str:
+def horizontal_line(width: int, style: str = "ascii", char: str | None = None) -> str:
     """Create a horizontal line of specified width.
 
     Args:

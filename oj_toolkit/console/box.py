@@ -6,7 +6,7 @@ border styles, and the @in_box decorator for wrapping function output.
 
 import sys
 from functools import wraps
-from typing import Callable, Optional
+from typing import Callable
 
 from oj_toolkit.console.terminal import (
     border_chars,
@@ -33,8 +33,8 @@ class Box:
         self,
         style: str = "auto",
         padding: int = 1,
-        width: Optional[int] = None,
-        title: Optional[str] = None,
+        width: int | None = None,
+        title: str | None = None,
     ):
         """Initialize Box with style and configuration.
 
@@ -172,8 +172,8 @@ class Box:
 def in_box(
     style: str = "auto",
     padding: int = 1,
-    width: Optional[int] = None,
-    title: Optional[str] = None,
+    width: int | None = None,
+    title: str | None = None,
 ) -> Callable:
     """Decorator to wrap function output in a box.
 

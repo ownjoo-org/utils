@@ -7,7 +7,7 @@ decorator for wrapping function output as tables.
 
 import sys
 from functools import wraps
-from typing import Callable, Dict, Iterator, List, Optional
+from typing import Callable, Iterator
 
 from oj_toolkit.console.terminal import (
     border_chars,
@@ -33,8 +33,8 @@ class Table:  # pylint: disable=too-many-instance-attributes
 
     def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         self,
-        headers: Optional[List[str]] = None,
-        columns: Optional[int] = None,
+        headers: list[str] | None = None,
+        columns: int | None = None,
         style: str = "auto",
         padding: int = 1,
         align: str = "left",
@@ -153,7 +153,7 @@ class Table:  # pylint: disable=too-many-instance-attributes
         self._column_aligns[column] = align
         return self
 
-    def _calculate_column_widths(self) -> Dict[int, int]:
+    def _calculate_column_widths(self) -> dict[int, int]:
         """Calculate optimal width for each column."""
         widths = {}
 
@@ -216,7 +216,7 @@ class Table:  # pylint: disable=too-many-instance-attributes
         return "\n".join(lines)
 
     def _make_border_line(  # pylint: disable=too-many-arguments,too-many-positional-arguments
-        self, tl: str, tr: str, fill: str, cross: str, widths: Dict[int, int]
+        self, tl: str, tr: str, fill: str, cross: str, widths: dict[int, int]
     ) -> str:
         """Create a border line with specified corners and junctions."""
         segments = [tl]
@@ -229,7 +229,7 @@ class Table:  # pylint: disable=too-many-instance-attributes
         return "".join(segments)
 
     def _make_data_line(  # pylint: disable=too-many-arguments,too-many-positional-arguments
-        self, row: List[str], widths: Dict[int, int], left: str, right: str, col_sep: str = "│"
+        self, row: list[str], widths: dict[int, int], left: str, right: str, col_sep: str = "│"
     ) -> str:
         """Create a data line with cell values.
 
@@ -279,8 +279,8 @@ class Table:  # pylint: disable=too-many-instance-attributes
 
 
 def tabulated(
-    headers: Optional[List[str]] = None,
-    columns: Optional[int] = None,
+    headers: list[str] | None = None,
+    columns: int | None = None,
     style: str = "auto",
     padding: int = 1,
 ) -> Callable:

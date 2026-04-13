@@ -5,7 +5,7 @@ supporting iterables and convenient color methods.
 """
 
 import sys
-from typing import Iterator, Optional, TextIO, Tuple
+from typing import Iterator, TextIO
 
 from oj_toolkit.console.colors import Color
 
@@ -31,14 +31,14 @@ class ColoredText:
         ...     print(f"{color}{segment_text}", end="")
     """
 
-    def __init__(self, stdout: Optional[TextIO] = None, stderr: Optional[TextIO] = None):
+    def __init__(self, stdout: TextIO | None = None, stderr: TextIO | None = None):
         """Initialize empty ColoredText.
 
         Args:
             stdout: Output stream for .out() method (default: sys.stdout).
             stderr: Error stream for .err() method (default: sys.stderr).
         """
-        self.segments: list[Tuple[str, str]] = []
+        self.segments: list[tuple[str, str]] = []
         self._stdout = stdout or sys.stdout
         self._stderr = stderr or sys.stderr
 
@@ -95,7 +95,7 @@ class ColoredText:
         """Add text with reset color. Shorthand for add(text, Color.RESET)."""
         return self.add(text, Color.RESET)
 
-    def from_iter(self, iterable: Iterator[Tuple[str, str]]) -> "ColoredText":
+    def from_iter(self, iterable: Iterator[tuple[str, str]]) -> "ColoredText":
         """Consume an iterable of (text, color) tuples.
 
         Args:
@@ -115,7 +115,7 @@ class ColoredText:
             self.add(text, color)
         return self
 
-    def __iter__(self) -> Iterator[Tuple[str, str]]:
+    def __iter__(self) -> Iterator[tuple[str, str]]:
         """Iterate over (text, color) segments.
 
         Yields:

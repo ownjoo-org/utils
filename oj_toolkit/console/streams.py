@@ -5,7 +5,7 @@ with support for colored output using ANSI escape codes and chainable colored te
 """
 
 import sys
-from typing import Optional, TextIO
+from typing import TextIO
 
 from oj_toolkit.console.colors import Color
 from oj_toolkit.console.colored_text import ColoredText
@@ -24,8 +24,8 @@ class Output:
 
     def __init__(
         self,
-        stdout: Optional[TextIO] = None,
-        stderr: Optional[TextIO] = None,
+        stdout: TextIO | None = None,
+        stderr: TextIO | None = None,
     ):
         """Initialize Output with optional custom streams.
 

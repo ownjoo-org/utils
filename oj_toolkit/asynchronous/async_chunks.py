@@ -1,9 +1,9 @@
-from typing import AsyncGenerator, AsyncIterator, List, TypeVar
+from typing import AsyncGenerator, AsyncIterator, TypeVar
 
 T = TypeVar("T")
 
 
-async def a_chunks(chunk_size: int, async_iterable: AsyncIterator[T]) -> AsyncGenerator[List[T], None]:
+async def a_chunks(chunk_size: int, async_iterable: AsyncIterator[T]) -> AsyncGenerator[list[T], None]:
     """Yield successive chunks from an async iterable.
 
     Args:
@@ -13,7 +13,7 @@ async def a_chunks(chunk_size: int, async_iterable: AsyncIterator[T]) -> AsyncGe
     Yields:
         Lists of up to chunk_size elements
     """
-    chunk: List[T] = []
+    chunk: list[T] = []
     async for item in async_iterable:
         chunk.append(item)
         if len(chunk) >= chunk_size:

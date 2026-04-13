@@ -6,7 +6,7 @@ decorator for wrapping function output in decorative boxes.
 """
 
 from functools import wraps
-from typing import Callable, Optional
+from typing import Callable
 
 from oj_toolkit.console.box import Box
 from oj_toolkit.console.terminal import pad_visible, truncate_visible
@@ -108,8 +108,8 @@ def repeat(text: str, count: int) -> str:
 def boxed(
     style: str = "auto",
     padding: int = 1,
-    width: Optional[int] = None,
-    title: Optional[str] = None,
+    width: int | None = None,
+    title: str | None = None,
 ) -> Callable:
     """Decorator to wrap function output in a decorative box.
 

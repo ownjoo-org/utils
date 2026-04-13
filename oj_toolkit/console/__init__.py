@@ -6,6 +6,7 @@ and formatting utilities for tables, boxes, and status displays.
 """
 
 from oj_toolkit.console.box import Box, in_box
+from oj_toolkit.console.terminal import detect_color_support, detect_unicode_support
 from oj_toolkit.console.colored_text import ColoredText
 from oj_toolkit.console.colors import Color
 from oj_toolkit.console.status import (
@@ -29,4 +30,6 @@ __all__ = [
     "progress_bar",
     "status_badge",
     "status_wrapped",
+    "detect_color_support",
+    "detect_unicode_support",
 ]

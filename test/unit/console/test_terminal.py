@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 from oj_toolkit.console.terminal import (
     border_chars,
+    detect_color_support,
     detect_unicode_support,
     horizontal_line,
     pad_visible,
@@ -13,6 +14,51 @@ from oj_toolkit.console.terminal import (
     truncate_visible,
     visible_width,
 )
+
+
+class TestDetectColorSupport(unittest.TestCase):
+    """Tests for color support detection."""
+
+    def test_returns_false_when_not_a_tty(self):
+        with patch('oj_toolkit.console.terminal.sys.stdout') as mock_stdout:
+            mock_stdout.isatty.return_value = False
+            result = detect_color_support()
+        self.assertFalse(result)
+
+    def test_returns_false_for_no_color_env(self):
+        with patch('oj_toolkit.console.terminal.sys.stdout') as mock_stdout:
+            mock_stdout.isatty.return_value = True
+            with patch.dict(os.environ, {'NO_COLOR': '1'}):
+                result = detect_color_support()
+        self.assertFalse(result)
+
+    def test_returns_false_for_dumb_term(self):
+        with patch('oj_toolkit.console.terminal.sys.stdout') as mock_stdout:
+            mock_stdout.isatty.return_value = True
+            with patch.dict(os.environ, {'TERM': 'dumb', 'NO_COLOR': ''}, clear=False):
+                result = detect_color_support()
+        self.assertFalse(result)
+
+    def test_returns_true_for_colorterm_truecolor(self):
+        with patch('oj_toolkit.console.terminal.sys.stdout') as mock_stdout:
+            mock_stdout.isatty.return_value = True
+            with patch.dict(os.environ, {'COLORTERM': 'truecolor', 'NO_COLOR': '', 'TERM': 'xterm'}, clear=False):
+                result = detect_color_support()
+        self.assertTrue(result)
+
+    def test_returns_true_for_colorterm_24bit(self):
+        with patch('oj_toolkit.console.terminal.sys.stdout') as mock_stdout:
+            mock_stdout.isatty.return_value = True
+            with patch.dict(os.environ, {'COLORTERM': '24bit', 'NO_COLOR': '', 'TERM': 'xterm'}, clear=False):
+                result = detect_color_support()
+        self.assertTrue(result)
+
+    def test_returns_true_for_capable_tty(self):
+        with patch('oj_toolkit.console.terminal.sys.stdout') as mock_stdout:
+            mock_stdout.isatty.return_value = True
+            with patch.dict(os.environ, {'NO_COLOR': '', 'TERM': 'xterm-256color', 'COLORTERM': ''}, clear=False):
+                result = detect_color_support()
+        self.assertTrue(result)
 
 
 class TestDetectUnicodeSupport(unittest.TestCase):

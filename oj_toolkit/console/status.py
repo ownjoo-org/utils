@@ -6,13 +6,13 @@ and status badges with optional colors.
 
 import sys
 from functools import wraps
-from typing import Callable, Optional
+from typing import Callable
 
 from oj_toolkit.console.colors import Color
 
 
 def status_line(
-    label: str, value: str, color: Optional[str] = None, sep: str = ": "
+    label: str, value: str, color: str | None = None, sep: str = ": "
 ) -> str:
     """Format a label-value status line with optional color.
 
@@ -41,7 +41,7 @@ def progress_bar(
     width: int = 20,
     filled: str = "█",
     empty: str = "░",
-    label: Optional[str] = None,
+    label: str | None = None,
 ) -> str:
     """Create a text-based progress bar.
 

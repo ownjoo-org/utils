@@ -9,7 +9,7 @@ This library is the single source of truth for shared utilities across ownjoo-or
 ### Modules
 
 - **`parsing`** — Type validation, datetime conversion, nested data extraction
-- **`logging`** — Progress tracking decorators for generator functions
+- **`logging`** — Standardized logging configuration and progress tracking decorators
 - **`console`** — Terminal and console output utilities (stdout, stderr, formatting)
 - **`data`** — Flexible data handling mixins
 - **`asynchronous`** — Async utilities (chunking, generators)
@@ -139,13 +139,62 @@ name = dig(data, path=['users', 0, 'name'])  # Returns: 'Alice'
 name = dig(data, path=['users', 1, 'name'], exp=str)  # Returns: 'Bob'
 ```
 
+### Logging Setup
+
+Call `configure_logging` once at application startup (Lambda handler, CLI `main()`, FastAPI lifespan). Libraries should never call it — they only use `logging.getLogger(__name__)`.
+
+```python
+from oj_toolkit.logging import configure_logging
+
+# Local development — human-readable output, WARNING+
+configure_logging(service='my-service')
+
+# Deployed environments — JSON lines to stdout, WARNING+
+configure_logging(service='my-service', env='prod')
+
+# Explicit level (int constant or string)
+configure_logging(service='my-service', level=logging.INFO)
+configure_logging(service='my-service', level='DEBUG')
+
+# Or set LOG_LEVEL env var — configure_logging will read it
+# LOG_LEVEL=INFO configure_logging(service='my-service')
+```
+
+**Local output** (`env='local'`): human-readable, with level names colorized when stdout is a TTY (`NO_COLOR` and `TERM=dumb` are respected):
+```
+2026/04/13 12:00:00 - my_module - INFO - started processing
+```
+
+**Deployed output** (`env='prod'` or any non-local value):
+```json
+{"timestamp": "2026-04-13T12:00:00+00:00", "level": "INFO", "logger": "my_module", "service": "my-service", "env": "prod", "message": "started processing"}
+```
+
+`configure_logging` is idempotent — safe to call multiple times, only the first call takes effect. Noisy third-party loggers (`urllib3`, `boto3`, `botocore`, `s3transfer`, `requests`) are silenced to WARNING automatically.
+
+**Extending for AWS Lambda** — subclass `JsonFormatter` and override `extra_fields` to inject per-request context:
+
+```python
+from oj_toolkit.logging.formatters import JsonFormatter
+
+class LambdaFormatter(JsonFormatter):
+    def __init__(self, service, env, context):
+        super().__init__(service, env)
+        self.context = context
+
+    def extra_fields(self, record):
+        return {'aws_request_id': self.context.aws_request_id}
+```
+
 ### Progress Logging
 
 ```python
 from oj_toolkit import timed_generator, timed_async_generator
 import logging
 
-# Log progress for a generator
+# configure_logging should be called at app startup before using these decorators
+configure_logging(service='my-service', level=logging.INFO)
+
 @timed_generator(log_progress_label="records", log_progress_interval=1000)
 def fetch_records():
     for i in range(50000):
@@ -155,12 +204,11 @@ for record in fetch_records():
     process(record)
 
 # Output:
-# 2024-01-15 10:30:00,123 - __main__ - INFO - Started records at 2024-01-15T10:30:00+00:00
-# 2024-01-15 10:31:00,234 - __main__ - INFO - Fetched 1000 records so far
-# 2024-01-15 10:02:00,345 - __main__ - INFO - Fetched 2000 records so far
+# 2026/04/13 10:30:00 - oj_toolkit.logging.decorators - INFO - Started records at 2026-04-13T10:30:00+00:00
+# 2026/04/13 10:31:00 - oj_toolkit.logging.decorators - INFO - Fetched 1000 records so far
 # ... (every 1000 items)
-# 2024-01-15 10:35:00,456 - __main__ - INFO - Ended records at 2024-01-15T10:35:00+00:00
-# 2024-01-15 10:35:00,456 - __main__ - INFO - Yielded 50000 records in 0:05:00
+# 2026/04/13 10:35:00 - oj_toolkit.logging.decorators - INFO - Ended records at 2026-04-13T10:35:00+00:00
+# 2026/04/13 10:35:00 - oj_toolkit.logging.decorators - INFO - Yielded 50000 records in 0:05:00
 ```
 
 For async generators:
@@ -586,6 +634,29 @@ print(box)
 print(status_line("Overall", "FAILED", color=Color.RED))
 ```
 
+#### Terminal Detection
+
+##### `detect_color_support() → bool`
+
+Returns `True` if ANSI color output is appropriate for the current environment.
+
+Checks in order: stdout is a real TTY → `NO_COLOR` env var → `TERM=dumb` → `COLORTERM=truecolor|24bit`.
+
+Used internally by `configure_logging` to choose between `ColoredHumanFormatter` and `HumanFormatter`.
+
+```python
+from oj_toolkit.console import detect_color_support
+
+if detect_color_support():
+    print(Color.GREEN + "ready" + Color.RESET)
+else:
+    print("ready")
+```
+
+##### `detect_unicode_support() → bool`
+
+Returns `True` if the terminal likely supports Unicode characters. Used internally to choose between ASCII and Unicode box/table borders.
+
 ### `parsing` Module
 
 #### `validate(v, exp=None, default=None, converter=None, validator=None, **kwargs)`
@@ -650,7 +721,7 @@ Supports:
 - Custom format via `format_str` parameter
 
 - **Parameters:**
-  - `v` (Union[None, datetime, float, str]): Value to parse
+  - `v` (datetime | float | str | None): Value to parse
   - `format_str` (str): Custom strptime format string
   - `**kwargs`: Additional arguments (unused)
 
@@ -733,6 +804,44 @@ repr(obj)                 # MyModel({'kind': 'model', 'name': 'Alice', 'score': 
 
 ### `logging` Module
 
+#### `configure_logging(service, env='local', level=None)`
+
+Configure the root logger once at application startup.
+
+- **Parameters:**
+  - `service` (str): Name of this service/project — appears in every log record
+  - `env` (str): Runtime environment. `'local'` → human-readable; anything else → JSON lines. Default: `'local'`
+  - `level` (int | str): Log level as `logging.INFO` / `logging.DEBUG` etc., or a name string `'INFO'`/`'DEBUG'`. Falls back to `LOG_LEVEL` env var, then `WARNING`
+
+- **Behavior:**
+  - Idempotent — no-op if root logger already has handlers
+  - Writes to `sys.stdout`
+  - Silences noisy third-party loggers (`urllib3`, `boto3`, `botocore`, `s3transfer`, `requests`) to WARNING
+
+#### `HumanFormatter`
+
+`logging.Formatter` subclass for human-readable local output. Uses `LOG_FORMAT` and `TimeFormats.DATE_AND_TIME`. No color codes — safe for piped/redirected output.
+
+#### `ColoredHumanFormatter`
+
+Subclass of `HumanFormatter` that wraps the level name in ANSI color codes before rendering. The original log record is never mutated (copied per format call).
+
+| Level | Color |
+|---|---|
+| DEBUG | dim |
+| INFO | cyan |
+| WARNING | yellow |
+| ERROR | red |
+| CRITICAL | bold red |
+
+`configure_logging` selects this automatically when `env='local'` and `detect_color_support()` returns True.
+
+#### `JsonFormatter(service, env)`
+
+`logging.Formatter` subclass for structured JSON output. Emits one JSON object per record with fields: `timestamp`, `level`, `logger`, `service`, `env`, `message` (and `exception` if present).
+
+Subclass and override `extra_fields(record) -> dict` to inject additional fields (e.g., `aws_request_id`, `correlation_id`).
+
 #### `timed_generator(log_progress=True, log_progress_label=None, log_progress_interval=10000, log_level=logging.INFO, logger=None)`
 
 Decorator that logs progress and timing for a generator function.
@@ -741,8 +850,8 @@ Decorator that logs progress and timing for a generator function.
   - `log_progress` (bool): Enable progress logging. Default: True
   - `log_progress_label` (str): Label for progress messages (e.g., "documents"). Default: function name
   - `log_progress_interval` (int): Log progress every N items. Default: 10000
-  - `log_level` (int): Logging level (e.g., logging.INFO). Default: logging.INFO
-  - `logger` (logging.Logger): Logger instance. Default: creates one with basicConfig
+  - `log_level` (int): Logging level (e.g., `logging.INFO`). Default: `logging.INFO`
+  - `logger` (logging.Logger): Logger instance. If None, uses root logger — calls `configure_logging` with local defaults if nothing has configured it yet
 
 - **Returns:** Decorated generator
 

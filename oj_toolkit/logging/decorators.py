@@ -9,18 +9,17 @@ Provides decorators to wrap generator and async generator functions with:
 import logging
 from datetime import datetime, timedelta, timezone
 from functools import wraps
-from typing import AsyncGenerator, Generator, Optional
+from typing import AsyncGenerator, Generator
 
-from oj_toolkit.logging.consts import LOG_FORMAT
-from oj_toolkit.parsing.consts import TimeFormats
+from oj_toolkit.logging.config import configure_logging
 
 
 def timed_generator(
         log_progress: bool = True,
-        log_progress_label: Optional[str] = None,
+        log_progress_label: str | None = None,
         log_progress_interval: int = 10000,
         log_level: int = logging.INFO,
-        logger: Optional[logging.Logger] = None,
+        logger: logging.Logger | None = None,
 ):
     """Decorator that logs progress and timing information for a generator function.
 
@@ -36,7 +35,8 @@ def timed_generator(
             If None, uses the wrapped function's name.
         log_progress_interval: Log progress every N items yielded (default: 10000).
         log_level: Logging level for all messages (default: logging.INFO).
-        logger: A logging.Logger instance. If None, creates one with basicConfig.
+        logger: A logging.Logger instance. If None, uses the root logger (calling
+            configure_logging with defaults if nothing has configured it yet).
 
     Returns:
         A decorator function that wraps a generator and yields items while logging.
@@ -56,45 +56,42 @@ def timed_generator(
         #       Ended records at 2024-01-15T10:35:00+00:00
         #       Yielded 50000 records in 0:05:00
     """
-    if not isinstance(logger, logging.Logger):
-        logging.basicConfig(
-            format=LOG_FORMAT,
-            level=logging.INFO,
-            datefmt=TimeFormats.DATE_AND_TIME.value,
-        )
-        logger = logging.getLogger(__name__)
-
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs) -> Generator:
             nonlocal log_progress_label
+            _logger = logger
+            if not isinstance(_logger, logging.Logger):
+                if not logging.root.handlers:
+                    configure_logging(service='oj_toolkit')
+                _logger = logging.getLogger(__name__)
             if not log_progress_label:
                 log_progress_label = func.__name__
             count: int = 0
             start = datetime.now(timezone.utc)
             if log_progress:
-                logger.log(log_level, f'Started {log_progress_label} at {start.isoformat()}')
+                _logger.log(log_level, f'Started {log_progress_label} at {start.isoformat()}')
             for each in func(*args, **kwargs):
                 yield each
                 count += 1
                 if log_progress:
                     if not count % log_progress_interval:
-                        logger.log(log_level, f'Fetched {count} {log_progress_label} so far')
+                        _logger.log(log_level, f'Fetched {count} {log_progress_label} so far')
             end = datetime.now(timezone.utc)
             elapsed: timedelta = end - start
             if log_progress:
-                logger.log(log_level, f'Ended {log_progress_label} at {end.isoformat()}')
-            logger.log(log_level, f'Yielded {count} {log_progress_label} in {elapsed}')
+                _logger.log(log_level, f'Ended {log_progress_label} at {end.isoformat()}')
+            _logger.log(log_level, f'Yielded {count} {log_progress_label} in {elapsed}')
         return wrapper
     return decorator
 
 
 def timed_async_generator(
         log_progress: bool = True,
-        log_progress_label: Optional[str] = None,
+        log_progress_label: str | None = None,
         log_progress_interval: int = 10000,
         log_level: int = logging.INFO,
-        logger: Optional[logging.Logger] = None,
+        logger: logging.Logger | None = None,
 ):
     """Decorator that logs progress and timing information for an async generator function.
 
@@ -110,7 +107,8 @@ def timed_async_generator(
             If None, uses the wrapped function's name.
         log_progress_interval: Log progress every N items yielded (default: 10000).
         log_level: Logging level for all messages (default: logging.INFO).
-        logger: A logging.Logger instance. If None, creates one with basicConfig.
+        logger: A logging.Logger instance. If None, uses the root logger (calling
+            configure_logging with defaults if nothing has configured it yet).
 
     Returns:
         A decorator function that wraps an async generator and yields items while logging.
@@ -129,34 +127,31 @@ def timed_async_generator(
         #       Ended records at 2024-01-15T10:35:00+00:00
         #       Yielded 50000 records in 0:05:00
     """
-    if not isinstance(logger, logging.Logger):
-        logging.basicConfig(
-            format=LOG_FORMAT,
-            level=logging.INFO,
-            datefmt=TimeFormats.DATE_AND_TIME.value,
-        )
-        logger = logging.getLogger(__name__)
-
     def decorator(func):
         @wraps(func)
         async def wrapper(*args, **kwargs) -> AsyncGenerator:
             nonlocal log_progress_label
+            _logger = logger
+            if not isinstance(_logger, logging.Logger):
+                if not logging.root.handlers:
+                    configure_logging(service='oj_toolkit')
+                _logger = logging.getLogger(__name__)
             if not log_progress_label:
                 log_progress_label = func.__name__
             count: int = 0
             start = datetime.now(timezone.utc)
             if log_progress:
-                logger.log(log_level, f'Started {log_progress_label} at {start.isoformat()}')
+                _logger.log(log_level, f'Started {log_progress_label} at {start.isoformat()}')
             async for each in func(*args, **kwargs):
                 yield each
                 count += 1
                 if log_progress:
                     if not count % log_progress_interval:
-                        logger.log(log_level, f'Fetched {count} {log_progress_label} so far')
+                        _logger.log(log_level, f'Fetched {count} {log_progress_label} so far')
             end = datetime.now(timezone.utc)
             elapsed: timedelta = end - start
             if log_progress:
-                logger.log(log_level, f'Ended {log_progress_label} at {end.isoformat()}')
-            logger.log(log_level, f'Yielded {count} {log_progress_label} in {elapsed}')
+                _logger.log(log_level, f'Ended {log_progress_label} at {end.isoformat()}')
+            _logger.log(log_level, f'Yielded {count} {log_progress_label} in {elapsed}')
         return wrapper
     return decorator

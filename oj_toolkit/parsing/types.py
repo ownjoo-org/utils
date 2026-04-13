@@ -10,7 +10,7 @@ This module provides functions to safely parse and validate values, including:
 import logging
 from datetime import datetime
 from collections.abc import Mapping, Sequence
-from typing import Any, Callable, Optional, Type, TypeVar, Union
+from typing import Any, Callable, Type, TypeVar
 
 T = TypeVar('T')
 R = TypeVar('R')
@@ -19,7 +19,7 @@ from oj_toolkit.parsing.consts import DEFAULT_CONVERTER, DEFAULT_SEPARATOR, DEFA
 
 logger = logging.getLogger(__name__)
 
-def str_to_list(v: Optional[str] = None, separator: str = DEFAULT_SEPARATOR) -> Optional[list[str]]:
+def str_to_list(v: str | None = None, separator: str = DEFAULT_SEPARATOR) -> list[str] | None:
     """Convert a string to a list by splitting on a separator.
 
     Args:
@@ -45,9 +45,9 @@ def str_to_list(v: Optional[str] = None, separator: str = DEFAULT_SEPARATOR) -> 
 
 
 def get_datetime(
-        v: Union[None, datetime, float, str] = None,
-        format_str: Optional[str] = None,
-) -> Optional[datetime]:
+        v: datetime | float | str | None = None,
+        format_str: str | None = None,
+) -> datetime | None:
     """Parse a value into a datetime object from multiple input formats.
 
     Supports parsing from:
@@ -77,7 +77,7 @@ def get_datetime(
         >>> get_datetime('Sun, 06 Nov 1994 08:49:37 GMT')
         datetime.datetime(1994, 11, 6, 8, 49, 37)
     """
-    result: Optional[datetime] = None
+    result: datetime | None = None
     try:
         if isinstance(v, datetime):
             result = v
@@ -102,11 +102,11 @@ def get_datetime(
 def validate(
         v: Any,
         exp: Type[T] = None,
-        default: Optional[T] = None,
+        default: T | None = None,
         converter: Callable = None,
-        validator: Optional[Callable] = DEFAULT_VALIDATOR,
+        validator: Callable | None = DEFAULT_VALIDATOR,
         **kwargs
-) -> Optional[T]:
+) -> T | None:
     """Validate and optionally convert a value with a custom converter and validator.
 
     This is a generic validation utility that:
@@ -172,12 +172,12 @@ def validate(
 
 
 def dig(
-        src: Union[Mapping, Sequence],
-        path: Union[None, int, list, str] = None,
+        src: Mapping | Sequence,
+        path: int | list | str | None = None,
         pop: bool = False,
         post_processor: Callable[..., R] = validate,
         **kwargs
-) -> Optional[R]:
+) -> R | None:
     """Extract and post-process a value from a nested data structure.
 
     Recursively navigates through nested dicts and lists using a path of keys/indices,
@@ -207,7 +207,7 @@ def dig(
         'Alice'
     """
     result: Any = None
-    remaining_path: Union[None, list] = None
+    remaining_path: list | None = None
 
     # Extract the first key/index without mutating the original path
     if path and isinstance(path, list) and len(path) > 0:
